@@ -70,13 +70,18 @@ if genre_recommend:
 
 	genres=['Thriller','Music','Adventure','Comedy','Fantasy','Crime','History','Romance','Animation','Horror','Family','Mystery','Western','Drama','Science Fiction','Action','Documentary','War','TV Movie']
 	
-	st.header("Choose filter mode")
+	cols=st.columns(2)
 
-	and_or=st.selectbox("",("Inclusive(And)","Exclusive(or)"))
+	for i,x in enumerate(cols):
+		with x:
+			if i==0:
+				st.header("Choose filter mode")
+				and_or=st.selectbox("",("Inclusive(And)","Exclusive(or)"))
+			elif i==1:
+				st.header("Select a Genre")
+				gen=st.multiselect("",genres)
+
 	
-	
-	st.header("Select a Genre")
-	gen=st.multiselect("",genres)
 	if and_or=="Inclusive(And)":
 		recs=get_movies_with_genre_and(genre=gen)
 	if and_or=="Exclusive(or)":
