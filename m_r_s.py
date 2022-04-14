@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 movies=pd.read_csv('data_with_genre_better.csv')
 ph=st.empty()
 
-def get_movies_with_genre(moviedata=movies,genre=['Action','Thriller']):
+def get_movies_with_genre_or(moviedata=movies,genre=['Action','Thriller']):
 	movielist=[]
 	j=0
 	for genreString in movies['genre']:
@@ -30,6 +30,30 @@ def get_movies_with_genre(moviedata=movies,genre=['Action','Thriller']):
 	df=df.sort_values('score',ascending=False)
 	return df
 
+def get_movies_with_genre_and(moviedata=movies,genre=['Action','Thriller']):
+	movielist=[]
+	j=0
+	for genreString in movies['genre']:
+		i=0
+		genList=[]
+		while genreString[i+1]!=']':
+			g=""
+			if i==0:
+				i+=2
+			else:
+				i+=4
+			while genreString[i]!="'":
+				g+=genreString[i]
+				i+=1
+			genList.append(g)
+		if set(genre).issubset(set(genList)):
+			movielist.append(movies.iloc[j])
+		j+=1
+	df=pd.DataFrame(movielist)
+	df=df.drop_duplicates()
+	df=df.sort_values('score',ascending=False)
+	return df
+
 st.title("Movie Recommender System")
 
 all_movies=st.checkbox("Show all movies")
@@ -45,9 +69,19 @@ if genre_recommend:
 	recs=None
 
 	genres=['Thriller','Music','Adventure','Comedy','Fantasy','Crime','History','Romance','Animation','Horror','Family','Mystery','Western','Drama','Science Fiction','Action','Documentary','War','TV Movie']
+	
+	st.header("Choose filter mode")
+
+	and_or=st.selectbox("",("Inclusive(And)","Exclusive(or)"))
+	
+	
 	st.header("Select a Genre")
 	gen=st.multiselect("",genres)
-	recs=get_movies_with_genre(genre=gen)
+	if and_or=="Inclusive(And)":
+		recs=get_movies_with_genre_and(genre=gen)
+	if and_or=="Exclusive(or)":
+		recs=get_movies_with_genre_or(genre=gen)
+
 	recs=recs[['title','genre','score']]
 
 	st.header("Top Movies for your Selected Genre")
