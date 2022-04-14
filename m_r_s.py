@@ -27,6 +27,7 @@ def get_movies_with_genre(moviedata=movies,genre=['Action','Thriller']):
 		j+=1
 	df=pd.DataFrame(movielist)
 	df=df.drop_duplicates()
+	df=df.sort_values('score',ascending=False)
 	return df
 
 st.title("Movie Recommender System")
@@ -41,9 +42,15 @@ if not all_movies:
 genre_recommend=st.checkbox("Find Best Movies according to Genre")
 
 if genre_recommend:
+	recs=None
+
 	genres=['Thriller','Music','Adventure','Comedy','Fantasy','Crime','History','Romance','Animation','Horror','Family','Mystery','Western','Drama','Science Fiction','Action','Documentary','War','TV Movie']
-	gen=st.multiselect("Select a genre",genres)
+	st.header("Select a Genre")
+	gen=st.multiselect("",genres)
 	recs=get_movies_with_genre(genre=gen)
 	recs=recs[['title','genre','score']]
-	st.dataframe(recs)
+
+	st.header("Top Movies for your Selected Genre")
+	if recs is not None:
+		st.dataframe(recs)
 
