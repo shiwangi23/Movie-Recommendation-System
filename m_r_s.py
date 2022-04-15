@@ -1,9 +1,12 @@
+from cProfile import label
 import streamlit as st
 
 import pandas as pd
 
 import numpy as np
-st.set_page_config(layout="wide")
+
+import matplotlib.pyplot as plt
+
 movies=pd.read_csv('data_with_genre_better.csv')
 ph=st.empty()
 
@@ -54,6 +57,9 @@ def get_movies_with_genre_and(moviedata=movies,genre=['Action','Thriller']):
 	df=df.sort_values('score',ascending=False)
 	return df
 
+def get_movies_with_lang(lang):
+	return movies[movies['original_language']==lang]
+
 st.title("Movie Recommender System")
 
 all_movies=st.checkbox("Show all movies")
@@ -64,6 +70,7 @@ if not all_movies:
 	ph.empty()
 
 genre_recommend=st.checkbox("Find Best Movies according to Genre")
+lang_recommend=st.checkbox("Find Best Movies according to Language")
 
 if genre_recommend:
 	recs=None
@@ -92,6 +99,42 @@ if genre_recommend:
 	st.header("Top Movies for your Selected Genre")
 	if recs is not None:
 		st.dataframe(recs)
+
+		x=list(movies['original_language'].value_counts()[:13].keys())
+
+
+elif lang_recommend:
+	langs=['en', 'fr', 'ja', 'it', 'de', 'es', 'zh', 'sv', 'cn', 'fi', 'ru', 'ko', 'hi']
+	langnc=['English','French','Japanese','Italian','German','Spanish','Chinese','Swedish','Mandarin','Finnish','Russian','Korean','Hindi']
+	explode=[0,0,0,0,0,0,0,0,0,0,0,0,0]
+	st.header("Choose a language")
+	l=st.selectbox('',langnc)
+	lx=l
+	for i,x in enumerate(langnc):
+		if x==l:
+			l=langs[i]
+			break
+
+	for i,x in enumerate(langs):
+		if langs[i]==l:
+			explode[i]=0.1
+
+	recs=get_movies_with_lang(l)
+	st.title(f"Top {lx} movies")
+
+	st.dataframe(recs)
+	# x=list(movies['original_language'].value_counts()[:13].keys())
+	x=langnc
+	y=list(movies['original_language'].value_counts()[:13])
+
+	fig, ax = plt.subplots()
+	ax.set_facecolor('pink')
+
+	ax.pie(y,explode=explode,shadow=True)
+	ax.legend(labels=x)
+	st.pyplot(fig)
+
+
 
 footer="""<style>
 .footer {
