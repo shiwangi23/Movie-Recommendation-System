@@ -252,7 +252,7 @@ if movie_recommend:
 		
 		return movies,posters
 
-	st.title("Movie Name : ")
+	st.title("Enter/Select Movie Name : ")
 	movie_name=st.selectbox("",new_df['title'])
 	recommend_me=st.button("Recommend Movies")
 
