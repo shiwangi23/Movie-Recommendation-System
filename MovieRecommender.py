@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import requests
 import matplotlib.pyplot as plt
 
-
+st.set_page_config(layout="wide")
 movies=pd.read_csv('data_with_genre_better.csv')
 ph=st.empty()
 
