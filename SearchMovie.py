@@ -103,8 +103,7 @@ def main():
 			actor_data=pd.DataFrame()
 			actor_data['Actor Name']=get_actors(mov_id)[:5]
 			st.table(actor_data)
-			st.header("Budget : {} Dollars".format(fetch_budget(mov_id)))
-			st.header("Release Date : {}".format(fetch_release_date(mov_id)))
+
 
 
 		with col3:
@@ -113,5 +112,7 @@ def main():
 			genre_data['Genre']=get_genre(mov_id)
 			st.table(genre_data)
 			st.header("Rating : {}/10".format(get_rating(mov_id)))
+			st.header("Budget : {} Dollars".format(fetch_budget(mov_id)))
+			st.header("Release Date : {}".format(fetch_release_date(mov_id)))
 			
 
