@@ -7,6 +7,7 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 import requests
 import matplotlib.pyplot as plt
+import SearchMovie
 
 st.set_page_config(layout="wide")
 movies=pd.read_csv('data_with_genre_better.csv')
@@ -83,29 +84,29 @@ def get_movies_with_prodcom_or(moviedata=movies,prodcom=['United Artists', 'Eon 
 	return df
 
 
-def get_movies_with_prodcom_and(moviedata=movies,prodcom=['United Artists', 'Eon Productions']):
-	movielist=[]
-	j=0
-	for prodString in movies['prod_comp']:
-		i=0
-		prodList=[]
-		while prodString[i+1]!=']':
-			p=""
-			if i==0:
-				i+=2
-			else:
-				i+=4
-			while prodString[i]!="'":
-				p+=prodString[i]
-				i+=1
-			prodList.append(p)
-		if set(prodcom).issubset(set(prodList)):
-			movielist.append(movies.iloc[j])
-		j+=1
-	df=pd.DataFrame(movielist)
-	df=df.drop_duplicates()
-	df=df.sort_values('score',ascending=False)
-	return df
+# def get_movies_with_prodcom_and(moviedata=movies,prodcom=['United Artists', 'Eon Productions']):
+# 	movielist=[]
+# 	j=0
+# 	for prodString in movies['prod_comp']:
+# 		i=0
+# 		prodList=[]
+# 		while prodString[i+1]!=']':
+# 			p=""
+# 			if i==0:
+# 				i+=2
+# 			else:
+# 				i+=4
+# 			while prodString[i]!="'":
+# 				p+=prodString[i]
+# 				i+=1
+# 			prodList.append(p)
+# 		if set(prodcom).issubset(set(prodList)):
+# 			movielist.append(movies.iloc[j])
+# 		j+=1
+# 	df=pd.DataFrame(movielist)
+# 	df=df.drop_duplicates()
+# 	df=df.sort_values('score',ascending=False)
+# 	return df
 
 
 def get_movies_with_lang(lang):
@@ -113,18 +114,21 @@ def get_movies_with_lang(lang):
 
 st.title("Movie Recommender System")
 
-all_movies=st.checkbox("Show all movies")
+search_movies=st.checkbox("Search Movies")
 
-if all_movies:
-	st.dataframe(movies[['id','title','genre','budget','vote_average']])
-if not all_movies:
-	ph.empty()
+if search_movies:
+	SearchMovie.main()
+movie_recommend=st.checkbox("Recommend Me Movies!!!")
+
 filter_movies=st.checkbox("Filter Movies")
 
 if filter_movies:
+
+	
 	genre_recommend=st.checkbox("Find Best Movies according to Genre")
+
 	lang_recommend=st.checkbox("Find Best Movies according to Language")
-	prodcom_recommend=st.checkbox("Find Best Movies according to Production Company")
+	# prodcom_recommend=st.checkbox("Find Best Movies according to Production Company")
 
 	if genre_recommend:
 		recs=None
@@ -191,31 +195,30 @@ if filter_movies:
 		ax.legend(labels=x)
 		st.pyplot(fig)
 
-	elif prodcom_recommend:
-		cols=st.columns(2)
+	# elif prodcom_recommend:
+	# 	cols=st.columns(2)
 		
-		for i,x in enumerate(cols):
-			with x:
-				if i==0:
-					st.header("Choose filter mode")
-					and_or=st.selectbox("",("Inclusive(And)","Exclusive(or)"))
-				elif i==1:
-					st.header("Select a Production Company")
-					prod=st.multiselect("",prodcoms)
+	# 	for i,x in enumerate(cols):
+	# 		with x:
+	# 			if i==0:
+	# 				st.header("Choose filter mode")
+	# 				and_or=st.selectbox("",("Inclusive(And)","Exclusive(or)"))
+	# 			elif i==1:
+	# 				st.header("Select a Production Company")
+	# 				prod=st.multiselect("",prodcoms)
 
 		
-		if and_or=="Inclusive(And)":
-			recs=get_movies_with_prodcom_and(prodcom=prod)
-		if and_or=="Exclusive(or)":
-			recs=get_movies_with_prodcom_or(prodcom=prod)
+	# 	if and_or=="Inclusive(And)":
+	# 		recs=get_movies_with_prodcom_and(prodcom=prod)
+	# 	if and_or=="Exclusive(or)":
+	# 		recs=get_movies_with_prodcom_or(prodcom=prod)
 
 
-		recs=recs[['title','genre','prod_comp','score']]
+	# 	recs=recs[['title','genre','prod_comp','score']]
 
-		st.header("Top Movies for your Selected Prod. Company")
-		if recs is not None:
-			st.dataframe(recs)
-movie_recommend=st.checkbox("Recommend Me Movies!!!")
+	# 	st.header("Top Movies for your Selected Prod. Company")
+	# 	if recs is not None:
+	# 		st.dataframe(recs)
 
 if movie_recommend:
 	movie_dataset=pd.read_csv("tmdb_5000_movies.csv")

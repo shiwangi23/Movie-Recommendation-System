@@ -119,6 +119,8 @@ for i in a:
 
 	b.append(get_only_prodcom(i))
 
+
+
 movies['prod_comp']=b
 
 movies.to_csv('data_with_genre_better.csv')
